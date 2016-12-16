@@ -1,0 +1,81 @@
+0|0|0|0|0|0|0|0|0|0|0|0|
+0|0|0|0|0|0|0|0|0|0|0|0|
+0|0|0|0|0|4|0|0|0|0|0|0|
+0|0|2|0|0|0|0|0|0|0|0|0|
+0|0|0|0|0|0|0|0|0|0|2|0|
+0|0|0|0|0|1|0|0|0|0|1|0|
+0|0|0|0|0|2|0|0|0|0|0|0|
+0|0|0|0|0|0|0|0|0|0|0|0|
+0|0|0|0|0|0|0|0|0|0|0|0|
+0|0|0|0|0|0|0|0|0|0|0|0|
+0|0|0|0|0|0|0|0|0|0|0|0|
+0|0|0|0|0|0|0|0|0|0|0|0|
+
+Ligne:68, Colonne:170
+Ligne:2, Colonne:5
+
+Ligne:102, Colonne:170
+Ligne:3, Colonne:5
+
+Ligne:68, Colonne:170
+Ligne:2, Colonne:5
+
+Ligne:34, Colonne:170
+Ligne:1, Colonne:5
+
+Ligne:0, Colonne:170
+Ligne:0, Colonne:5
+
+Ligne:0, Colonne:136
+Ligne:0, Colonne:4
+
+Ligne:0, Colonne:102
+Ligne:0, Colonne:3
+
+Ligne:0, Colonne:68
+Ligne:0, Colonne:2
+
+Ligne:0, Colonne:102
+Ligne:0, Colonne:3
+
+Ligne:0, Colonne:136
+Ligne:0, Colonne:4
+
+Ligne:34, Colonne:136
+Ligne:1, Colonne:4
+
+Ligne:34, Colonne:102
+Ligne:1, Colonne:3
+
+Ligne:0, Colonne:102
+Ligne:0, Colonne:3
+
+Ligne:34, Colonne:102
+Ligne:1, Colonne:3
+
+Ligne:68, Colonne:102
+Ligne:2, Colonne:3
+
+Ligne:102, Colonne:102
+Ligne:3, Colonne:3
+
+Ligne:102, Colonne:102
+Ligne:3, Colonne:3
+
+Ligne:102, Colonne:34
+Ligne:3, Colonne:1
+
+Ligne:102, Colonne:0
+Ligne:3, Colonne:0
+
+Ligne:102, Colonne:34
+Ligne:3, Colonne:1
+
+Ligne:102, Colonne:34
+Ligne:3, Colonne:1
+
+Ligne:102, Colonne:102
+Ligne:3, Colonne:3
+
+Ligne:102, Colonne:170
+Ligne:3, Colonne:5
