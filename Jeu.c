@@ -81,7 +81,7 @@ void Play(SDL_Surface* fenetre){
     SDL_Flip(fenetre);
     SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
     Level = IMG_Load("IMGEdit/Level.bmp");
-    SDL_EnableKeyRepeat(100, 100);
+
     while (continuer){
         SDL_WaitEvent(&event);
         switch (event.type){
@@ -112,14 +112,15 @@ void Play(SDL_Surface* fenetre){
             break;
         }
         if (event.type == SDL_KEYDOWN){
-            spriteTouche = deplacerMario(&posMario, Direction, vitesseMario, tabCarte);
+            spriteTouche = deplacerMario(&posMario, Direction, vitesseMario, tabCarte, &posCaisse);
         }
 
         switch (spriteTouche){
         case MUR:
             break;
         case CAISSE:
-            deplacerCaisse(&posMario, &posCaisse, tabCarte, vitesseMario, Direction);
+            deplacerCaisse(&posMario, tabCarte, vitesseMario, Direction, fenetre, Sprite, &posCaisse);
+            Level = IMG_Load("IMGEdit/Level.bmp");
             break;
         }
 
@@ -164,7 +165,7 @@ int initPosDepart(int tab[][NB_BLOCS_LARGEUR], int* posligne, int* poscolonne){
     return 0;
 }
 
-int deplacerMario(SDL_Rect* posMario, int Direction, int vitesseMario, int tab[][NB_BLOCS_LARGEUR]){
+int deplacerMario(SDL_Rect* posMario, int Direction, int vitesseMario, int tab[][NB_BLOCS_LARGEUR], SDL_Rect* posCaisse){
     SDL_Rect pos2, posObstacle;
     int Ligne, Colonne;
     /*Pour connaitre la pos sur la carte du perso*/
@@ -222,6 +223,8 @@ int deplacerMario(SDL_Rect* posMario, int Direction, int vitesseMario, int tab[]
     //les Caisse
     if (tab[Ligne + 1][Colonne] == '2' && Direction == BAS){// si la case du dessous est une caisse
         posObstacle.y = quadrillageSup(posMario->y);
+        posCaisse->y = posObstacle.y;
+        posCaisse->x = posMario->x;
         if (posMario->y + TAILLE_BLOC >= posObstacle.y){// si les pieds de mario touche la caisse
             return CAISSE;
         }
@@ -265,16 +268,14 @@ int deplacerMario(SDL_Rect* posMario, int Direction, int vitesseMario, int tab[]
     return 0;
 }
 
-int deplacerCaisse(SDL_Rect* posMario, SDL_Rect* posCaisse, int tab[][NB_BLOCS_LARGEUR], int vitesseMario, int Direction){
-    int taill_bloc = TAILLE_BLOC * 2;
+int deplacerCaisse(SDL_Rect* posMario, int tab[][NB_BLOCS_LARGEUR], int vitesseMario, int Direction, SDL_Surface* fenetre, SDL_Surface **Sprite, SDL_Rect* posCaisse){
+    int taill_bloc = vitesseMario * 2;
     int Ligne, Colonne;
 
     Ligne = quadrillageInf(posMario->y);
     Colonne = quadrillageInf(posMario->x);
-    printf("\nLigne:%d, Colonne:%d\n", Ligne, Colonne);
     Ligne /= TAILLE_BLOC;
     Colonne /= TAILLE_BLOC;
-    printf("Ligne:%d, Colonne:%d\n", Ligne, Colonne);
 
     //mur
     if (Direction == HAUT && tab[Ligne - 2][Colonne] == '1'){// si il y a un mur au dessus la caisse
@@ -285,14 +286,26 @@ int deplacerCaisse(SDL_Rect* posMario, SDL_Rect* posCaisse, int tab[][NB_BLOCS_L
         return 0;
     }
 
+    if (Direction == DROITE && tab[Ligne][Colonne + 2] == '1'){// si il y a un mur a droite de la caisse
+        return 0;
+    }
+
+    if (Direction == BAS && tab[Ligne + 2][Colonne] == '1'){// si il y a un mur a gauche de la caisse
+        return 0;
+    }
+
     //mouvement si on y arrive
-    posCaisse = posMario;
+    posCaisse->x = posMario->x;
+    posCaisse->y = posMario->y;
     if (Direction == BAS){
         posCaisse->y += taill_bloc;
+        posMario->y += vitesseMario;
+        SDL_BlitSurface(Sprite[VIDE], NULL, fenetre, posMario);
     }
 
     if (Direction == HAUT){
         posCaisse->y -= taill_bloc;
+
     }
     if (Direction == DROITE){
         posCaisse->x += taill_bloc;
@@ -300,6 +313,10 @@ int deplacerCaisse(SDL_Rect* posMario, SDL_Rect* posCaisse, int tab[][NB_BLOCS_L
     if (Direction == GAUCHE){
         posCaisse->x -= taill_bloc;
     }
+    SDL_Flip(fenetre);
+    SDL_Delay(1000);
+    SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+    return 0;
 }
 
 int quadrillageSup(int val){
