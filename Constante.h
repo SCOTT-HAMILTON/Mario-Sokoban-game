@@ -13,5 +13,6 @@
 
     enum {HAUT, BAS, GAUCHE, DROITE};
     enum {VIDE, MUR, CAISSE, OBJECTIF, MARIO, CAISSE_OK};
+    enum {WIN, LOSE};
 
 #endif // Constante_h_

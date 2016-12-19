@@ -30,7 +30,7 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add directory="C:/Program Files (x86)/CodeBlocks/SDL-1.2.15/include" />
+			<Add directory="C:/Program Files/CodeBlocks/SDL-1.2.15/include" />
 		</Compiler>
 		<Linker>
 			<Add library="mingw32" />
@@ -40,8 +40,8 @@
 			<Add library="gdi32" />
 			<Add library="winmm" />
 			<Add library="dxguid" />
-			<Add library="C:/Program Files (x86)/CodeBlocks/SDL-1.2.15/lib/SDL_image.lib" />
-			<Add directory="C:/Program Files (x86)/CodeBlocks/SDL-1.2.15/lib" />
+			<Add library="C:/Program Files/CodeBlocks/SDL-1.2.15/lib/SDL_image.lib" />
+			<Add directory="C:/Program Files/CodeBlocks/SDL-1.2.15/lib" />
 		</Linker>
 		<Unit filename="Constante.h" />
 		<Unit filename="Editeur.c">
@@ -56,6 +56,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Jeu.h" />
+		<Unit filename="MSsource.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
