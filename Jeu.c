@@ -3,9 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Constante.h"
-#include "Fichier.h"
 #include "Jeu.h"
-#include "Fichier.h"
+#include "Editeur.h"
 
 void Play(SDL_Surface* fenetre){
     SDL_Surface *Level, *MarioActuel, *mario[4], *Sprite[NBR_SPRITE_EDITEUR], *gagne;
@@ -17,21 +16,21 @@ void Play(SDL_Surface* fenetre){
 
     SDL_FillRect(fenetre, NULL, SDL_MapRGB(fenetre->format, 255, 255, 255));
     SDL_Flip(fenetre);
-    SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+    SDL_SaveBMP(fenetre, FILE_LEVEL);
 
     //init Surface
-    Level = IMG_Load("IMGEdit/Level.bmp");
-    mario[BAS] = IMG_Load("Sprite/mario_bas.gif");
-    mario[DROITE] = IMG_Load("Sprite/mario_droite.gif");
-    mario[HAUT] = IMG_Load("Sprite/mario_haut.gif");
-    mario[GAUCHE] = IMG_Load("Sprite/mario_gauche.gif");
+    Level = IMG_Load(FILE_LEVEL);
+    mario[BAS] = IMG_Load(FILE_MARIO_BAS);
+    mario[DROITE] = IMG_Load(FILE_MARIO_DROITE);
+    mario[HAUT] = IMG_Load(FILE_MARIO_HAUT);
+    mario[GAUCHE] = IMG_Load(FILE_MARIO_GAUCHE);
 
-    Sprite[MUR] = IMG_Load("Sprite/mur.jpg");
-    Sprite[CAISSE] = IMG_Load("Sprite/caisse.jpg");
-    Sprite[OBJECTIF] = IMG_Load("Sprite/objectif.png");
+    Sprite[MUR] = IMG_Load(FILE_MUR);
+    Sprite[CAISSE] = IMG_Load(FILE_CAISSE);
+    Sprite[OBJECTIF] = IMG_Load(FILE_OBJECTIF);
     Sprite[VIDE] = SDL_CreateRGBSurface(SDL_HWSURFACE, TAILLE_BLOC, TAILLE_BLOC, 32, 0, 0, 0, 0);
-    Sprite[MARIO] = IMG_Load("Sprite/mario_bas.gif");
-    gagne = IMG_Load("IMGEdit/Gagne.bmp");
+    Sprite[MARIO] = IMG_Load(FILE_MARIO_BAS);
+    gagne = IMG_Load(FILE_GAGNE);
     SDL_SetColorKey(gagne, SDL_SRCCOLORKEY, SDL_MapRGB(gagne->format, 255, 255, 255));
 
     MarioActuel = mario[BAS];
@@ -85,8 +84,8 @@ void Play(SDL_Surface* fenetre){
 
     SDL_Event event;
     SDL_Flip(fenetre);
-    SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
-    Level = IMG_Load("IMGEdit/Level.bmp");
+    SDL_SaveBMP(fenetre, FILE_LEVEL);
+    Level = IMG_Load(FILE_LEVEL);
     SDL_EnableKeyRepeat(100, 100);
     while (continuer){
         SDL_WaitEvent(&event);
@@ -126,7 +125,7 @@ void Play(SDL_Surface* fenetre){
                 SDL_Delay(1000);
             }
         }
-        Level = IMG_Load("IMGEdit/Level.bmp");
+        Level = IMG_Load(FILE_LEVEL);
         SDL_BlitSurface(Level, NULL, fenetre, &posLevel);
         SDL_BlitSurface(MarioActuel, NULL, fenetre, &posMario);
 
@@ -134,11 +133,34 @@ void Play(SDL_Surface* fenetre){
     }
 }
 
+int fopen_fichier_niveau(FILE** file){
+    // Try to open FOLDER/File1 first
+    *file = fopen(FILE_NIVEAU, "r");
+    if (*file != NULL) {
+        printf("Successfully opened %s\n", FILE_NIVEAU);
+    } else {
+        *file = fopen(FILE_NIVEAU0, "r");
+        if (*file != NULL) {
+            printf("Successfully opened %s\n", FILE_NIVEAU0);
+        } 
+        else {
+            fprintf(stderr, "Error: Could not open %s nor %s\n", FILE_NIVEAU, FILE_NIVEAU0);
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int GetLevel(int tab[][NB_BLOCS_LARGEUR]){
     char tabtemp[NB_BLOCS_HAUTEUR * NB_BLOCS_LARGEUR + 1];
     FILE *fichier = NULL;int ligne = 0, colonne = 0, i = 0;
-    fichier = fopen("IMGEdit/niveau.txt", "r");
-    if (fichier == NULL) return EXIT_FAILURE;
+    if (fopen_fichier_niveau(&fichier)) {
+        return EXIT_FAILURE;
+    }
+    if (fichier == NULL) {
+        perror("Lol fichier niveau empty\n");
+        return EXIT_FAILURE;
+    }
     else{
         for (ligne = 0; ligne < NB_BLOCS_HAUTEUR; ligne++){
             for (colonne = 0; colonne < NB_BLOCS_LARGEUR; colonne++){
@@ -170,9 +192,9 @@ int initPosDepart(int tab[][NB_BLOCS_LARGEUR], int* posligne, int* poscolonne){
 int deplacerMario(SDL_Rect* posMario, int Direction, int vitesseMario, int tab[][NB_BLOCS_LARGEUR], SDL_Surface* fenetre){
     SDL_Rect posObstacle, posCaisse, posVide, posObj;
     SDL_Surface *caisse, *vide, *caisse_ok, *objectif;
-    caisse = IMG_Load("Sprite/caisse.jpg");
-    caisse_ok = IMG_Load("Sprite/caisse_ok.jpg");
-    objectif = IMG_Load("Sprite/objectif.png");
+    caisse = IMG_Load(FILE_CAISSE);
+    caisse_ok = IMG_Load(FILE_CAISSE_OK);
+    objectif = IMG_Load(FILE_OBJECTIF);
     vide = SDL_CreateRGBSurface(SDL_HWSURFACE, TAILLE_BLOC, TAILLE_BLOC, 32, 0, 0, 0, 0);
     SDL_FillRect(vide, NULL, SDL_MapRGB(vide->format, 255, 255, 255));
 
@@ -250,14 +272,14 @@ int deplacerMario(SDL_Rect* posMario, int Direction, int vitesseMario, int tab[]
                     SDL_BlitSurface(objectif, NULL, fenetre, posMario);
                 }
                 SDL_Flip(fenetre);
-                SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+                SDL_SaveBMP(fenetre, FILE_LEVEL);
                 if (tab[Ligne + 1][Colonne] == '5'){
                     posObj.y += TAILLE_BLOC;
                     tab[Ligne + 1][Colonne] = '3';
                     SDL_BlitSurface(vide, NULL, fenetre, &posObj);
                     SDL_BlitSurface(objectif, NULL, fenetre, &posObj);
                     SDL_Flip(fenetre);
-                    SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+                    SDL_SaveBMP(fenetre, FILE_LEVEL);
                     tab[Ligne + 2][Colonne] = '2';
                 }else{
                     if (tab[Ligne + 2][Colonne] == '3'){
@@ -265,7 +287,7 @@ int deplacerMario(SDL_Rect* posMario, int Direction, int vitesseMario, int tab[]
                         tab[Ligne + 1][Colonne] = '0';
                         SDL_BlitSurface(caisse_ok, NULL, fenetre, &posCaisse);
                         SDL_Flip(fenetre);
-                        SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+                        SDL_SaveBMP(fenetre, FILE_LEVEL);
                     }else{
                         tab[Ligne + 2][Colonne] = '2';
                         tab[Ligne + 1][Colonne] = '0';
@@ -293,14 +315,14 @@ int deplacerMario(SDL_Rect* posMario, int Direction, int vitesseMario, int tab[]
                     SDL_BlitSurface(objectif, NULL, fenetre, posMario);
                 }
                 SDL_Flip(fenetre);
-                SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+                SDL_SaveBMP(fenetre, FILE_LEVEL);
                 if (tab[Ligne - 1][Colonne] == '5'){
                     posObj.y -= TAILLE_BLOC;
                     tab[Ligne - 1][Colonne] = '3';
                     SDL_BlitSurface(vide, NULL, fenetre, &posObj);
                     SDL_BlitSurface(objectif, NULL, fenetre, &posObj);
                     SDL_Flip(fenetre);
-                    SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+                    SDL_SaveBMP(fenetre, FILE_LEVEL);
                     tab[Ligne - 2][Colonne] = '2';
                 }else{
                     if (tab[Ligne - 2][Colonne] == '3'){
@@ -308,7 +330,7 @@ int deplacerMario(SDL_Rect* posMario, int Direction, int vitesseMario, int tab[]
                         tab[Ligne - 1][Colonne] = '0';
                         SDL_BlitSurface(caisse_ok, NULL, fenetre, &posCaisse);
                         SDL_Flip(fenetre);
-                        SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+                        SDL_SaveBMP(fenetre, FILE_LEVEL);
                     }else{
                         tab[Ligne - 2][Colonne] = '2';
                         tab[Ligne - 1][Colonne] = '0';
@@ -336,14 +358,14 @@ int deplacerMario(SDL_Rect* posMario, int Direction, int vitesseMario, int tab[]
                     SDL_BlitSurface(objectif, NULL, fenetre, posMario);
                 }
                 SDL_Flip(fenetre);
-                SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+                SDL_SaveBMP(fenetre, FILE_LEVEL);
                 if (tab[Ligne][Colonne + 1] == '5'){
                     posObj.x += TAILLE_BLOC;
                     tab[Ligne][Colonne + 1] = '3';
                     SDL_BlitSurface(vide, NULL, fenetre, &posObj);
                     SDL_BlitSurface(objectif, NULL, fenetre, &posObj);
                     SDL_Flip(fenetre);
-                    SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+                    SDL_SaveBMP(fenetre, FILE_LEVEL);
                     tab[Ligne][Colonne + 2] = '2';
                 }else{
                     if (tab[Ligne][Colonne + 2] == '3'){
@@ -351,7 +373,7 @@ int deplacerMario(SDL_Rect* posMario, int Direction, int vitesseMario, int tab[]
                         tab[Ligne][Colonne + 1] = '0';
                         SDL_BlitSurface(caisse_ok, NULL, fenetre, &posCaisse);
                         SDL_Flip(fenetre);
-                        SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+                        SDL_SaveBMP(fenetre, FILE_LEVEL);
                     }else{
                         tab[Ligne][Colonne + 2] = '2';
                         tab[Ligne][Colonne + 1] = '0';
@@ -379,14 +401,14 @@ int deplacerMario(SDL_Rect* posMario, int Direction, int vitesseMario, int tab[]
                     SDL_BlitSurface(objectif, NULL, fenetre, posMario);
                 }
                 SDL_Flip(fenetre);
-                SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+                SDL_SaveBMP(fenetre, FILE_LEVEL);
                 if (tab[Ligne][Colonne - 1] == '5'){
                     posObj.x -= TAILLE_BLOC;
                     tab[Ligne][Colonne - 1] = '3';
                     SDL_BlitSurface(vide, NULL, fenetre, &posObj);
                     SDL_BlitSurface(objectif, NULL, fenetre, &posObj);
                     SDL_Flip(fenetre);
-                    SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+                    SDL_SaveBMP(fenetre, FILE_LEVEL);
                     tab[Ligne][Colonne - 2] = '2';
                 }else{
                     if (tab[Ligne][Colonne - 2] == '3'){
@@ -394,7 +416,7 @@ int deplacerMario(SDL_Rect* posMario, int Direction, int vitesseMario, int tab[]
                         tab[Ligne][Colonne - 1] = '0';
                         SDL_BlitSurface(caisse_ok, NULL, fenetre, &posCaisse);
                         SDL_Flip(fenetre);
-                        SDL_SaveBMP(fenetre, "IMGEdit/Level.bmp");
+                        SDL_SaveBMP(fenetre, FILE_LEVEL);
                     }else{
                         tab[Ligne][Colonne - 2] = '2';
                         tab[Ligne][Colonne - 1] = '0';

@@ -1,0 +1,6 @@
+Alt+F4        → retour au menu principal
+Clique gauche → poser un sprite
+Clique droit  → enlever un sprite
+Espace        → retour à ce menu
+E             → enregistrement du niveau
+Del           → remise à zéro du niveau

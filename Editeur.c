@@ -4,7 +4,6 @@
 #include <SDL_image.h>
 #include "Constante.h"
 #include "Editeur.h"
-#include "Fichier.h"
 
 void createLevel(SDL_Surface* fenetre){
     SDL_Surface *Sprite[NBR_SPRITE_EDITEUR], *Menu, *EditSurface;
@@ -16,18 +15,18 @@ void createLevel(SDL_Surface* fenetre){
     int SpriteChoisi = 0;int tabCarte[NB_BLOCS_HAUTEUR][NB_BLOCS_LARGEUR], ligne = 0, colonne = 0;
 
     SDL_FillRect(fenetre, NULL, SDL_MapRGB(fenetre->format, 255, 255, 255));
-    SDL_SaveBMP(fenetre, "IMGEdit/EditFenetre.bmp");
+    SDL_SaveBMP(fenetre, FILE_EDIT_FENETRE);
 
     //init Surface
-    Sprite[MUR] = IMG_Load("Sprite/mur.jpg");
-    Sprite[CAISSE] = IMG_Load("Sprite/caisse.jpg");
-    Sprite[OBJECTIF] = IMG_Load("Sprite/objectif.png");
+    Sprite[MUR] = IMG_Load(FILE_MUR);
+    Sprite[CAISSE] = IMG_Load(FILE_CAISSE);
+    Sprite[OBJECTIF] = IMG_Load(FILE_OBJECTIF);
     Sprite[VIDE] = SDL_CreateRGBSurface(SDL_HWSURFACE, TAILLE_BLOC, TAILLE_BLOC, 32, 0, 0, 0, 0);
-    Sprite[MARIO] = IMG_Load("Sprite/mario_bas.gif");
-    Menu = IMG_Load("IMGEdit/EditeurMenu.bmp");
-    EditSurface = IMG_Load("IMGEdit/EditFenetre.bmp");
-    Error = IMG_Load("IMGEdit/Error.png");
-    Success = IMG_Load("IMGEdit/Success.png");
+    Sprite[MARIO] = IMG_Load(FILE_MARIO_BAS);
+    Menu = IMG_Load(FILE_EDITEUR_MENU);
+    EditSurface = IMG_Load(FILE_EDIT_FENETRE);
+    Error = IMG_Load(FILE_ERROR);
+    Success = IMG_Load(FILE_SUCCESS);
 
     //init pos Surface
     posMenu.x = 0;posMenu.y = 0;
@@ -128,9 +127,9 @@ void createLevel(SDL_Surface* fenetre){
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym){
                 case SDLK_SPACE:
-                    SDL_SaveBMP(fenetre, "IMGEdit/EditFenetre.bmp");
-                    EditSurface = IMG_Load("IMGEdit/EditFenetre.bmp");
-                    Menu = IMG_Load("IMGEdit/EditeurMenu.bmp");
+                    SDL_SaveBMP(fenetre, FILE_EDIT_FENETRE);
+                    EditSurface = IMG_Load(FILE_EDIT_FENETRE);
+                    Menu = IMG_Load(FILE_EDITEUR_MENU);
                     menu = 1;
                     break;
                 case SDLK_e:
@@ -154,8 +153,8 @@ void createLevel(SDL_Surface* fenetre){
                     SDL_Delay(2000);
                 case SDLK_DELETE:
                     SDL_FillRect(fenetre, NULL, SDL_MapRGB(fenetre->format, 255, 255, 255));
-                    SDL_SaveBMP(fenetre, "IMGEdit/EditFenetre.bmp");
-                    EditSurface = IMG_Load("IMGEdit/EditFenetre.bmp");
+                    SDL_SaveBMP(fenetre, FILE_EDIT_FENETRE);
+                    EditSurface = IMG_Load(FILE_EDIT_FENETRE);
                     for (ligne = 0; ligne < NB_BLOCS_HAUTEUR; ligne++){
                         for (colonne = 0; colonne < NB_BLOCS_LARGEUR; colonne++){
                             tabCarte[ligne][colonne] = VIDE;
@@ -180,7 +179,7 @@ int getQuadrillage(int* value){
 
 int SetLevel(int tab[][NB_BLOCS_LARGEUR]){
     FILE *fichier = NULL;int ligne = 0, colonne = 0;
-    fichier = fopen("IMGEdit/niveau.txt", "w+");
+    fichier = fopen(FILE_NIVEAU, "w+");
     if (fichier == NULL) return EXIT_FAILURE;
     else{
         for (ligne = 0; ligne < NB_BLOCS_HAUTEUR; ligne++){
